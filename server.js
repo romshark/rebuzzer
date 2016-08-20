@@ -1,6 +1,7 @@
 #! /usr/bin/env node
 
 const fs = require('fs')
+const path = require('path')
 const childProcess = require('child_process')
 const kill = require('tree-kill')
 const app = require('express')()
@@ -94,9 +95,9 @@ app.get('/jquery.js', function(req, res) {
 	res.send(page.jquery)
 })
 
-page.index = fs.readFileSync('./page/index.html')
-page.socketio = fs.readFileSync('./page/socketio.js')
-page.jquery = fs.readFileSync('./page/jquery.js')
+page.index = fs.readFileSync(path.resolve(__dirname, './page/index.html'))
+page.socketio = fs.readFileSync(path.resolve(__dirname, './page/socketio.js'))
+page.jquery = fs.readFileSync(path.resolve(__dirname, './page/jquery.js'))
 
 verifyColor(color)
 verifyCommand(command)
