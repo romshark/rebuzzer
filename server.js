@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 const fs = require('fs')
 const childProcess = require('child_process')
 const kill = require('tree-kill')
