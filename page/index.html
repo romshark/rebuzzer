@@ -55,9 +55,11 @@
 	</style>
 	<script>
 		const socket = io();
-		var color;
+		var color, interval;
+		var clickable = true;
 		socket.on('data', function(data) {
 			data = JSON.parse(data);
+			interval = data.interval;
 			color = ('rgb(' + data.color + ')');
 			$('#command').css({
 				'color': color
@@ -68,7 +70,16 @@
 		$(document).ready(function() {
 			var parent, ink, d, x, y;
 			$("#button").click(function(event){
+				if(!clickable) {
+					return;
+				}
 				socket.emit('run', '')
+				if(interval > 0) {
+					clickable = false;
+					setTimeout(function() {
+						clickable = true;
+					}, interval);
+				}
 				parent = $(this).parent();
 				if(parent.find(".ink").length == 0) {
 					parent.prepend("<span class='ink'></span>");

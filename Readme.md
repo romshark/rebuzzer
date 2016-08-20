@@ -26,6 +26,11 @@ When rebuzzer is executed repeatedly it will automatically kill the process star
 rebuzzer --command "echo FIRST; echo SECOND"
 ```
 
+* To make the buzzer inactive for *n* milliseconds after previous activation:
+```bash
+rebuzzer --interval 500
+```
+
 * You can tweak the appearance by providing a color in RGB format:
 ```bash
 rebuzzer --color 255,255,0

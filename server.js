@@ -10,12 +10,13 @@ const io = require('socket.io')(http)
 const argv = require('optimist').argv
 const page = {}
 const color = argv.color ? argv.color : '255,255,255'
+const interval = parseInt(argv.interval ? argv.interval : 0)
 const command = argv.command ? argv.command : ''
 const name = argv.name ? argv.name : 'rebuzzer'
 const port = argv.port ? argv.port : 7000
 var currentProc
 
-function verifyColor(color) {
+function verifyColor() {
 	const error = new Error(
 		'Wrong color: "'
 		+ color
@@ -32,9 +33,19 @@ function verifyColor(color) {
 	}
 }
 
-function verifyCommand(command) {
+function verifyCommand() {
 	if(command.length < 1) {
 		throw new Error('No command')
+	}
+}
+
+function verifyInterval() {
+	if(!/^\d+$/.test(interval)) {
+		throw new Error(
+			'Invalid interval: "'
+			+ interval
+			+ '", milliseconds expected'
+		)
 	}
 }
 
@@ -70,7 +81,8 @@ io.on('connection', function(socket){
 	socket.emit('data', JSON.stringify({
 		color: color,
 		command: command,
-		name: name
+		name: name,
+		interval: interval
 	}))
 	socket.on('run', run)
 })
@@ -99,12 +111,16 @@ page.index = fs.readFileSync(path.resolve(__dirname, './page/index.html'))
 page.socketio = fs.readFileSync(path.resolve(__dirname, './page/socketio.js'))
 page.jquery = fs.readFileSync(path.resolve(__dirname, './page/jquery.js'))
 
-verifyColor(color)
-verifyCommand(command)
+verifyColor()
+verifyCommand()
+verifyInterval()
 
 http.listen(port, function() {
 	console.log('rebuzzer started')
 	console.log('  name: ' + name)
 	console.log('  command: ' + command)
 	console.log('  port ' + port)
+	if(interval > 0) {
+		console.log('  interval: ' + interval)
+	}
 })
