@@ -1,6 +1,6 @@
 {
   "name": "rebuzzer",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Rebuzzer is a fullscreen button in the browser which executes a command on the server by clicking on it",
   "main": "server.js",
   "dependencies": {
