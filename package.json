@@ -1,0 +1,34 @@
+{
+  "name": "rebuzzer",
+  "version": "1.0.0",
+  "description": "Rebuzzer is a fullscreen button in the browser which executes a command on the server by clicking on it",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.14.0",
+    "optimist": "^0.6.1",
+    "tree-kill": "^1.1.0",
+    "socket.io": "^1.4.8"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/romshark/rebuzzer.git"
+  },
+  "keywords": [
+    "buzzer",
+    "restart",
+    "process",
+    "command",
+    "cli"
+  ],
+  "author": "Roman Sharkov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/romshark/rebuzzer/issues"
+  },
+  "homepage": "https://github.com/romshark/rebuzzer#readme"
+}
