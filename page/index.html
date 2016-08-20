@@ -42,7 +42,6 @@
 		.ink {
 			display: block;
 			position: absolute;
-			background-color: #0098ff;
 			border-radius: 100%;
 			transform: scale(0);
 		}
@@ -54,6 +53,33 @@
 		}
 	</style>
 	<script>
+		var rippleId = 0;
+		function paintRipple(target, options) {
+			if(!options.size) {
+				options.size = 64
+			}
+			if(!options.opacity) {
+				options.opacity = 1
+			}
+			++rippleId;
+			const id = ('ripple' + rippleId);
+			target.prepend('<span id="' + id + '" class="ink"></span>');
+			setTimeout(function() {
+				target.remove(id);
+			}, 2500)
+			const ink = target.find('#' + id);
+			const x = options.x - target.offset().left - options.size / 2;
+			const y = options.y - target.offset().top - options.size / 2;
+			ink.css({
+				'opacity': options.opacity, 
+				'width': options.size,
+				'height': options.size,
+				'background-color': options.color,
+				'top': (y + 'px'),
+				'left': (x + 'px')
+			}).addClass("animate");
+		}
+
 		const socket = io();
 		var color, interval;
 		var clickable = true;
@@ -68,38 +94,30 @@
 			document.title = data.name;
 		})
 		$(document).ready(function() {
-			var parent, ink, d, x, y;
 			$("#button").click(function(event){
 				if(!clickable) {
+					paintRipple($(this).parent(), {
+						size: ($(this).parent().width() / 8),
+						x: event.pageX,
+						y: event.pageY,
+						opacity: .3,
+						color: color
+					});
 					return;
 				}
-				socket.emit('run', '')
+				socket.emit('run', '');
 				if(interval > 0) {
 					clickable = false;
 					setTimeout(function() {
 						clickable = true;
 					}, interval);
 				}
-				parent = $(this).parent();
-				if(parent.find(".ink").length == 0) {
-					parent.prepend("<span class='ink'></span>");
-				}
-				ink = parent.find(".ink");
-				ink.removeClass("animate");
-				if(!ink.height() && !ink.width()) {
-					const d = Math.max(parent.outerWidth(), parent.outerHeight());
-					ink.css({
-						height: d,
-						width: d
-					});
-				}
-				const x = event.pageX - parent.offset().left - ink.width() / 2;
-				const y = event.pageY - parent.offset().top - ink.height() / 2;
-				ink.css({
-					'top': y+'px',
-					'left': x+'px',
-					'background-color': color
-				}).addClass("animate");
+				paintRipple($(this).parent(), {
+					size: ($(this).parent().width() / 2),
+					x: event.pageX,
+					y: event.pageY,
+					color: color
+				});
 			})
 		})
 	</script>
