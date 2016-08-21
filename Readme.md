@@ -47,10 +47,20 @@ rebuzzer --port 8080
 ```
 
 ##Example
-This will remove file **temporary**, then start **node somescript.js**. When the buzzer is klicked repeatedly Rebuzzer will kill the previously started **node somescript.js** process and all of its child processes, then remove **temporary** and then run **node somescript.js** again.
+
 ```bash
-rebuzzer --port 8080 --color 255,255,0 --name "Restart Script" --command "rm -rf temporary; node somescript.js"
+rebuzzer --port 8080 --color 255,255,0 --name "Restart Script" --command "node somescript.js" --command "rm -rf temporary; node somescript.js" --command "sleep 2; node somescript.js &"
 ```
 
+This example will run three commands simultaneously:
+
+* The first command will start the **node somescript.js** as a child process.
+* The second one will first remove file **temporary**, then start the **node somescript.js** as another child process.
+* The third command will start **node somescript.js** as a separate background process.
+
+When the buzzer is klicked repeatedly Rebuzzer will try to recursively shutdown all child processes by requesting graceful termination before it attempts to restart all 3 commands again. Notice Rebuzzer will fail to kill the third process due to the node script within it being started as a separate process.
+
+During the shutdown of all 3 commands the buzzer won't trigger.
+
 ##Security
-Please notice anyone on the network being able reach the host will also be able to trigger the command restart. Use with caution.
+Please notice anyone on the network being able reach the host will also be able to trigger command restarts. Use with caution.
