@@ -34,7 +34,7 @@
 			position: relative;
 		}
 		#commands {
-			font-size: 3rem;
+			font-size: 1.5rem;
 			color: #5f5f5f;
 			display: block;
 			padding: 1.5rem;
@@ -91,7 +91,11 @@
 			$('#commands').css({
 				'color': color
 			});
-			$("#commands").text(data.commands);
+			$("#commands .list").empty();
+			for(index in data.commands) {
+				data.commands[index];
+				$("#commands .list").append('<li>' + data.commands[index] + '</li>');
+			}
 			document.title = data.name;
 		})
 		socket.on('clickable', function(bool) {
@@ -128,7 +132,7 @@
 </head>
 <body>
 	<div id="button">
-		<div id="commands">#commands</div>
+		<div id="commands"><ul class="list"></ul></div>
 	</div>
 </body>
 </html>
