@@ -65,7 +65,7 @@
 			const id = ('ripple' + rippleId);
 			target.prepend('<span id="' + id + '" class="ink"></span>');
 			setTimeout(function() {
-				target.remove(id);
+				$('#' + id).remove();
 			}, 2500)
 			const ink = target.find('#' + id);
 			const x = options.x - target.offset().left - options.size / 2;
