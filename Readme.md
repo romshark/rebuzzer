@@ -21,9 +21,9 @@ When rebuzzer is executed repeatedly it will automatically kill the process star
 
 ## Options
 
-* Rebuzzer can take a series of commands:
+* Rebuzzer can take multiple commands to be executed:
 ```bash
-rebuzzer --command "echo FIRST; echo SECOND"
+rebuzzer --command "echo FIRST" --command "echo SECOND"
 ```
 
 * To make the buzzer inactive for *n* milliseconds after previous activation:
