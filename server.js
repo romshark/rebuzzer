@@ -113,7 +113,11 @@ function killProcesses(callback) {
 					return toBeKilled.length > 0
 				},
 				function execution(evaluate) {
-					process.kill(toBeKilled[0], 'SIGTERM')
+					try {
+						process.kill(toBeKilled[0], 'SIGTERM')
+					} catch(error) {
+						//ignore process termination failure
+					}
 					killingNow.push(toBeKilled[0])
 					toBeKilled.splice(0, 1)
 					waitUntilKilled(killingNow[killingNow.length - 1], function(proc) {
