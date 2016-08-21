@@ -4,8 +4,11 @@
   "description": "Rebuzzer is a fullscreen button in the browser which executes a command on the server by clicking on it",
   "main": "server.js",
   "dependencies": {
+    "async": "^2.0.1",
     "express": "^4.14.0",
-    "optimist": "^0.6.1",
+    "is-running": "^2.1.0",
+    "minimist": "^1.2.0",
+    "ps-tree": "^1.1.0",
     "socket.io": "^1.4.8",
     "tree-kill": "^1.1.0"
   },
