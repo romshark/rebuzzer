@@ -75,7 +75,6 @@ function startProcesses() {
 			{maxBuffer: 1048576},
 			function(error, stdout, stderr) {}
 		)
-		//console.log('START PROCESS', proc.pid, commands[index])
 		proc.stdout.on('data', function(data) {
 			process.stdout.write(data)
 			proc.stdout = new Buffer(1048576)
@@ -104,25 +103,20 @@ function killProcesses(callback) {
 	const killingNow = []
 	for(pid in currentProc) {
 		proc = currentProc[pid]
-		//console.log('COMMAND TO BE KILLED', pid)
 		toBeKilled.push(pid)
 		getAllChildProcessId(pid, function(children) {
-			//console.log('CHILDREN:', children)
 			for(index in children) {
 				toBeKilled.push(children[index])
 			}
-			//console.log('TBK:', toBeKilled)
 			async.whilst(
 				function evaluation() {
 					return toBeKilled.length > 0
 				},
 				function execution(evaluate) {
 					process.kill(toBeKilled[0], 'SIGTERM')
-					//console.log('KILL SEND TO', toBeKilled[0])
 					killingNow.push(toBeKilled[0])
 					toBeKilled.splice(0, 1)
 					waitUntilKilled(killingNow[killingNow.length - 1], function(proc) {
-						//console.log('PROCESS', proc, 'IS DEAD')
 						if(proc in currentProc) {
 							delete currentProc[proc]
 						}
@@ -140,12 +134,10 @@ function killProcesses(callback) {
 }
 
 function rerun() {
-	//console.log('CURRENT RUNNIGN:', Object.keys(currentProc).length, Object.keys(currentProc))
 	if(Object.keys(currentProc).length > 0) {
 		readyToRerun = false
 		io.emit('clickable', false)
 		killProcesses(function() {
-			//console.log('ALL PROCESSES ARE DEAD')
 			startProcesses()
 			readyToRerun = true
 			io.emit('clickable', true)
