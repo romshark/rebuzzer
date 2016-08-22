@@ -31,6 +31,11 @@ rebuzzer --command "echo FIRST" --command "echo SECOND"
 rebuzzer --interval 500
 ```
 
+* To rerun commands without waiting for the termination of previously started child processes:
+```bash
+rebuzzer --nowait
+```
+
 * You can tweak the appearance by providing a color in RGB format:
 ```bash
 rebuzzer --color 255,255,0
