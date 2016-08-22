@@ -44,7 +44,18 @@ function verifyCommands() {
 		commands = [argv.command]
 	}
 	for(index in commands) {
+		if(
+			commands[index] === false
+			|| commands[index] === true
+			|| commands[index] === undefined
+		) {
+			commands.splice(index, 1)
+			continue
+		}
 		commands[index] = '' + commands[index]
+	}
+	if(commands.length < 1) {
+		throw new Error('No commands, expected at least one command')
 	}
 }
 
