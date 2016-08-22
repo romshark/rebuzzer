@@ -14,6 +14,7 @@ const argv = require('minimist')(process.argv.slice(2));
 const page = {}
 const color = argv.color ? argv.color : '255,255,255'
 const interval = parseInt(argv.interval ? argv.interval : 0)
+const nowait = argv.nowait ? true : false
 const name = argv.name ? argv.name : 'rebuzzer'
 const port = argv.port ? argv.port : 7000
 var commands = argv.command
@@ -108,7 +109,7 @@ function waitUntilKilled(processList, callback) {
 			}, processStatusPollingInterval)
 		},
 		function() {
-			callback()
+			callback(processList)
 		}
 	)
 }
@@ -145,9 +146,15 @@ function killProcesses(callback) {
 				//ignore process termination failure
 			}
 		}
-		waitUntilKilled(toBeKilled, function() {
-			currentProc = {}
-			callback()
+		waitUntilKilled(toBeKilled, function(killed) {
+			for(index in killed) {
+				if(killed[index] in currentProc) {
+					delete currentProc[killed[index]]
+				}
+			}
+			if(callback) {
+				callback()
+			}
 		})
 	})
 }
@@ -156,11 +163,18 @@ function rerun() {
 	if(Object.keys(currentProc).length > 0) {
 		readyToRerun = false
 		io.emit('clickable', false)
-		killProcesses(function() {
+		if(nowait) {
+			killProcesses()
 			startProcesses()
 			readyToRerun = true
 			io.emit('clickable', true)
-		})
+		} else {
+			killProcesses(function() {
+				startProcesses()
+				readyToRerun = true
+				io.emit('clickable', true)
+			})
+		}
 	} else if(readyToRerun) {
 		readyToRerun = false
 		io.emit('clickable', false)
