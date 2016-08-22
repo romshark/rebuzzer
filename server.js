@@ -18,7 +18,7 @@ const name = argv.name ? argv.name : 'rebuzzer'
 const port = argv.port ? argv.port : 7000
 var commands = argv.command
 const processStatusPollingInterval = 100
-const currentProc = {}
+var currentProc = {}
 var readyToRerun = true
 
 function verifyColor() {
@@ -87,54 +87,69 @@ function startProcesses() {
 	}
 }
 
-function waitUntilKilled(pid, callback) {
-	if(isRunning(pid)) {
-		setTimeout(function() {
-			waitUntilKilled(pid, callback)
-		}, processStatusPollingInterval)
-		return
-	}
-	return callback(pid)
+function waitUntilKilled(processList, callback) {
+	async.whilst(
+		function() {
+			return processList.length > 0
+		},
+		function(evaluate) {
+			for(proc in processList) {
+				var res = isRunning(processList[proc])
+				if(!res) {
+					processList.splice(proc, 1)
+				}
+			}
+			if(processList.length < 1) {
+				evaluate()
+				return
+			}
+			setTimeout(function() {
+				evaluate()
+			}, processStatusPollingInterval)
+		},
+		function() {
+			callback()
+		}
+	)
+}
+
+function resolveProcesses(callback) {
+	const commandProcs = Object.keys(currentProc)
+	const allProcs = []
+	async.whilst(
+		function() {
+			return commandProcs.length > 0
+		},
+		function(evaluate) {
+			allProcs.push(commandProcs[0])
+			getAllChildProcessId(commandProcs[0], function(children) {
+				for(index in children) {
+					allProcs.push(children[index])
+				}
+				commandProcs.splice(0, 1)
+				evaluate()
+			})
+		},
+		function() {
+			callback(allProcs)
+		}
+	)
 }
 
 function killProcesses(callback) {
-	var proc
-	const toBeKilled = []
-	const killingNow = []
-	for(pid in currentProc) {
-		proc = currentProc[pid]
-		toBeKilled.push(pid)
-		getAllChildProcessId(pid, function(children) {
-			for(index in children) {
-				toBeKilled.push(children[index])
+	resolveProcesses(function(toBeKilled) {
+		for(index in toBeKilled) {
+			try {
+				process.kill(toBeKilled[index], 'SIGTERM')
+			} catch(error) {
+				//ignore process termination failure
 			}
-			async.whilst(
-				function evaluation() {
-					return toBeKilled.length > 0
-				},
-				function execution(evaluate) {
-					try {
-						process.kill(toBeKilled[0], 'SIGTERM')
-					} catch(error) {
-						//ignore process termination failure
-					}
-					killingNow.push(toBeKilled[0])
-					toBeKilled.splice(0, 1)
-					waitUntilKilled(killingNow[killingNow.length - 1], function(proc) {
-						if(proc in currentProc) {
-							delete currentProc[proc]
-						}
-						killingNow.splice(killingNow.indexOf(proc), 1)
-						if(killingNow.length < 1) {
-							callback()
-						}
-					})
-					evaluate()
-				},
-				function completion() {}
-			)
+		}
+		waitUntilKilled(toBeKilled, function() {
+			currentProc = {}
+			callback()
 		})
-	}
+	})
 }
 
 function rerun() {
